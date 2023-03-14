@@ -1,4 +1,5 @@
 import NueralNetwork
+import NueralNetworkVisualizer
 
 #https://www.youtube.com/watch?v=JeVDjExBf7Y
 #https://youtu.be/dPWYUELwIdM
@@ -6,90 +7,70 @@ import NueralNetwork
 
 #create a simple nueral network for testing
 b = NueralNetwork.brain()
+nodes = []
 
 #we will try to recognize a 2x2 pixel pattern
 #add inputs
 #upper left pixel
-ul = b.addInput()
+nodes.append([])
+nodes[len(nodes) - 1].append(b.addInput(label='Upper Left'))
 #upper right
-ur = b.addInput()
-#lower left
-ll = b.addInput()
+nodes[len(nodes) - 1].append(b.addInput(label='Upper Right'))
 #lower right
-lr = b.addInput()
+nodes[len(nodes) - 1].append(b.addInput(label='Lower Right'))
+#lower left
+nodes[len(nodes) - 1].append(b.addInput(label='Lower Left'))
 
-#add outputs
-#empty
-e = b.addOutput()
-#full
-f = b.addOutput()
-#left vertical
-lv = b.addOutput()
-#rightvertical
-rv = b.addOutput()
-##up diagonal
-ud = b.addOutput()
-#down diagonal
-dd = b.addOutput()
-#lower horizontal
-lh = b.addOutput()
-#upper horizontal
-uh = b.addOutput()
+bias = 0
 
 #now add layers and links
+nodes.append([])
 b.addLayer()
-n1 = b.addNode(0)
-n2 = b.addNode(0)
-n3 = b.addNode(0)
-n4 = b.addNode(0)
-b.addLink(ul, n1)
-b.addLink(ul, n3)
-b.addLink(ur, n2)
-b.addLink(ur, n4)
-b.addLink(ll, n1)
-b.addLink(ll, n3)
-b.addLink(lr, n2)
-b.addLink(lr, n4)
+nodes[len(nodes) - 1].append(b.addNode(1, bias = bias, weightsIn = [1, 0, 0, 1], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, bias = bias, weightsIn = [0, 1, 1, 0], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, bias = bias, weightsIn = [1, 0, 0, -1], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, bias = bias, weightsIn = [0, 1, -1, 0], activation = NueralNetwork.node.hyperbolicTangent))
 
+nodes.append([])
 b.addLayer()
-l2n1 = b.addNode(1)
-l2n2 = b.addNode(1)
-l2n3 = b.addNode(1)
-l2n4 = b.addNode(1)
-b.addLink(n1, l2n1)
-b.addLink(n1, l2n2)
-b.addLink(n2, l2n1)
-b.addLink(n2, l2n2)
-b.addLink(n3, l2n3)
-b.addLink(n3, l2n4)
-b.addLink(n4, l2n3)
-b.addLink(n4, l2n4)
+nodes[len(nodes) - 1].append(b.addNode(2, bias = bias, weightsIn = [1, 1, 0, 0], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, bias = bias, weightsIn = [-1, 1, 0, 0], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, bias = bias, weightsIn = [0, 0, 1, -1], activation = NueralNetwork.node.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, bias = bias, weightsIn = [0, 0, 1, 1], activation = NueralNetwork.node.hyperbolicTangent))
 
-#now add links to outputs
-b.addLink(l2n1, e)
-b.addLink(l2n1, f)
-b.addLink(l2n2, lv)
-b.addLink(l2n2, rv)
-b.addLink(l2n3, ud)
-b.addLink(l2n3, dd)
-b.addLink(l2n4, uh)
-b.addLink(l2n4, lh)
+#add outputs
+nodes.append([])
+#empty
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [1, 0, 0, 0], label = "Empty", activation = NueralNetwork.node.rectifiedLinearUnits))
+#full
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [-1, 0, 0, 0], label = "Full", activation = NueralNetwork.node.rectifiedLinearUnits))
+#left vertical
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, 1, 0, 0], label = "Left Vertical", activation = NueralNetwork.node.rectifiedLinearUnits))
+#rightvertical
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, -1, 0, 0], label = "Right Vertical", activation = NueralNetwork.node.rectifiedLinearUnits))
+##up diagonal
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, 0, 1, 0], label = "Up Diagonal", activation = NueralNetwork.node.rectifiedLinearUnits))
+#down diagonal
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, 0, -1, 0], label = "Down Diagonal", activation = NueralNetwork.node.rectifiedLinearUnits))
+#lower horizontal
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, 0, 0, 1], label = "Lower Horizontal", activation = NueralNetwork.node.rectifiedLinearUnits))
+#upper horizontal
+nodes[len(nodes) - 1].append(b.addOutput(bias = bias, weightsIn = [0, 0, 0, -1], label = "Upper Horizontal", activation = NueralNetwork.node.rectifiedLinearUnits))
 
 #now set input
-b.setInput(ul, 1)
-b.setInput(ur, 1)
+b.setInput(nodes[0][0], 1)
+b.setInput(nodes[0][1], 1)
+b.setInput(nodes[0][2], -1)
+b.setInput(nodes[0][3], -1)
+
+v = NueralNetworkVisualizer.visualizer(b, 600, 1000, node_size = 50, line_scale = 4)
+v.drawNetwork()
+v.waitUntilClick()
 
 #now process
 b.process()
-
-print(f'e: {e.getValue()}')
-print(f'f: {f.getValue()}')
-print(f'lv: {lv.getValue()}')
-print(f'rv: {rv.getValue()}')
-print(f'ud: {ud.getValue()}')
-print(f'dd: {dd.getValue()}')
-print(f'lh: {lh.getValue()}')
-print(f'uh: {uh.getValue()}')
+v.drawNetwork()
+v.waitUntilClick()
 
 
 
