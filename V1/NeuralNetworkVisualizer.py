@@ -36,7 +36,7 @@ class visualizer:
     def showWindow(self):
         self.window.deiconify()
 
-    def drawNetwork(self):
+    def drawNetwork(self, showWeights = True, showValues = True, showBias = True, showUnweightedConnections = False):
         #add something to dynamically choose node size based of canvas size maybe
         if self.window == None:
             self.initializeWindow()
@@ -62,9 +62,19 @@ class visualizer:
                 nodes[l].append([self.canvas.create_oval(x, y, x1, y1, fill = '#1BC2A0'), self.nueralNetwork.layers[l][n]])
 
                 #write value, bias
-                textX = (x + x1) / 2
-                textY = (y + y1) / 2
-                self.canvas.create_text(textX, textY, text = f'v: {round(self.nueralNetwork.layers[l][n].getValue(), 2)}\nb: {self.nueralNetwork.layers[l][n].bias}')
+                text = ''
+                if showValues:
+                    text += f'v: {round(self.nueralNetwork.layers[l][n].getValue(), 2)}'
+                if showBias:
+                    if text != '':
+                        text += '\n'
+                    text += f'b: {self.nueralNetwork.layers[l][n].bias}'
+
+                if text != '':
+                    textX = (x + x1) / 2
+                    textY = (y + y1) / 2
+                    #self.canvas.create_text(textX, textY, text = f'v: {round(self.nueralNetwork.layers[l][n].getValue(), 2)}\nb: {self.nueralNetwork.layers[l][n].bias}')
+                    self.canvas.create_text(textX, textY, text = text)
 
                 #if node has a label, label it
                 if self.nueralNetwork.layers[l][n].label != None:
@@ -78,13 +88,15 @@ class visualizer:
                     if l != 0:
                         #first check weight
                         weight = self.nueralNetwork.layers[l][n].weights[i]
-                        if weight != 0:
+                        if weight != 0 or showUnweightedConnections:
                             width = abs(weight) * self.line_scale
 
                             if weight < 0:
                                 fill = 'red'
-                            else:
+                            elif weight > 0:
                                 fill = 'blue'
+                            else:
+                                fill = 'gray'
 
                             previousNode = nodes[l-1][i]
                             origin = self.canvas.coords(previousNode[0])
@@ -102,9 +114,10 @@ class visualizer:
                             self.canvas.tag_lower(line)
 
                             #now write weight
-                            weightX = centerX + (destCenterX - centerX) / 5 
-                            weightY = centerY + (destCenterY - centerY) / 5 
-                            self.canvas.create_text(weightX, weightY, text = weight, font = ('Times', '16'))
+                            if showWeights:
+                                weightX = centerX + (destCenterX - centerX) / 5 
+                                weightY = centerY + (destCenterY - centerY) / 5 
+                                self.canvas.create_text(weightX, weightY, text = weight, font = ('Times', '16'))
 
         #links are lines
         self.window.update()

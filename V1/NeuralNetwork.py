@@ -2,6 +2,9 @@
 #https://www.youtube.com/watch?v=aircAruvnKk
 
 import math
+import pickle
+import os
+import operator
 
 class node:
     def setValue(self, value, input = False):
@@ -12,7 +15,7 @@ class node:
             self.value = value
         else:
             self.value = self.activation(value)
-        print(f'ID: {self.id}, New Value: {self.value}')
+        #print(f'ID: {self.id}, New Value: {self.value}')
 
     def getValue(self):
         return self.value
@@ -38,9 +41,9 @@ class node:
     def process(self):
         n = 0
         for i in range(0, len(self.inputs)):
-            print(f'ID: {self.id}, Input: {self.inputs[i].id}, Input Value: {self.inputs[i].getValue()}, Weight: {self.weights[i]}')
+            #print(f'ID: {self.id}, Input: {self.inputs[i].id}, Input Value: {self.inputs[i].getValue()}, Weight: {self.weights[i]}')
             n += self.inputs[i].getValue() * self.weights[i]
-        print(f'ID: {self.id}, Input Sum: {n}, Bias: {self.bias}, Sum + Bias: {n + self.bias}')
+        #print(f'ID: {self.id}, Input Sum: {n}, Bias: {self.bias}, Sum + Bias: {n + self.bias}')
         n += self.bias
         self.unfixedValue = n
         self.setValue(n)
@@ -142,7 +145,7 @@ class brain:
         
         return self.layers[index]
     
-    def setInput(self, input, value):
+    def setInput(input, value):
         input.setValue(value, True)
 
     def setInputByIndex(self, index, value):
@@ -162,3 +165,21 @@ class brain:
     def getWeightsList(self, layer):
         weights = [1 for i in self.layers[layer]]
         return weights
+    
+    def saveStructure(self, path, name):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        file = os.path.join(path, name) + '.ns'
+        with open(file, 'wb') as f:
+            pickle.dump(self, f)
+
+    def loadStructure(file):
+        with open(file, 'rb') as f:
+            b = pickle.load(f)
+        return b
+    
+    def getSortedOutputs(self):
+        outputs = [[x, self.outputs[x].label, self.outputs[x].value] for x in range(len(self.outputs))]
+        outputs = sorted(outputs, key = operator.itemgetter(2), reverse = True)
+        return outputs
