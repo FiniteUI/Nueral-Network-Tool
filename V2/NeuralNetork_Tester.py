@@ -5,10 +5,6 @@ import time
 import datetime
 import NueralNetwork_ActivationFunctions
 
-#https://www.youtube.com/watch?v=JeVDjExBf7Y
-#https://youtu.be/dPWYUELwIdM
-#https://www.youtube.com/watch?v=ILsA4nyG7I0
-
 #create a simple nueral network for testing
 b = NeuralNetwork.brain()
 nodes = []
@@ -24,8 +20,6 @@ nodes[len(nodes) - 1].append(b.addInput(label='Upper Right'))
 nodes[len(nodes) - 1].append(b.addInput(label='Lower Right'))
 #lower left
 nodes[len(nodes) - 1].append(b.addInput(label='Lower Left'))
-
-#bias = 0
 
 #now add layers and links
 nodes.append([])
@@ -100,12 +94,21 @@ b.setInputByIndex(2, -1)
 b.setInputByIndex(3, 1)
 
 v = NeuralNetwork_Visualizer.visualizer(b, 600, 1000, node_size = 50, line_scale = 4)
-v.drawNetwork(showWeights = False)
+v.drawNetwork(showWeights = True)
 v.waitUntilClick()
+
+#test modifications
+#b.removeNode(testNode)
+#b.removeLinkByIndex(5)
+#b.updateLinkByIndex(5, 1.3)
+#b.removeLayer(2)
+#b.replaceLinkWithNode(5, NueralNetwork_ActivationFunctions.hyperbolicTangent)
+#v.drawNetwork(showWeights = True)
+#v.waitUntilClick()
 
 #now process
 b.process()
-v.drawNetwork(showWeights = False)
+v.drawNetwork(showWeights = True)
 v.waitUntilClick()
 
 for i in nodes[len(nodes) - 1]:

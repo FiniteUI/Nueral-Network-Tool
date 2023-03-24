@@ -1,5 +1,4 @@
 #simple nueral network tool
-#https://www.youtube.com/watch?v=aircAruvnKk
 
 import pickle
 import os
@@ -7,8 +6,9 @@ import operator
 import NueralNetwork_ActivationFunctions
 
 class node:
+    count = 0
     #node will just store inputs, and weights, and it's own value
-    def __init__(self, activation, label = None, id = None):
+    def __init__(self, activation, label = None):
         #list of nodes and weights that input to this node
         self.inputs = []
         self.value = 0
@@ -17,7 +17,8 @@ class node:
 
         #optional
         self.label = label
-        self.id = id
+        self.id = node.count
+        node.count += 1
 
     def setValue(self, value):
         self.rawValue = value
@@ -32,10 +33,13 @@ class node:
     def addInput(self, node, weight):
         input = [node, weight]
         self.inputs.append(input)
+        return len(self.inputs) - 1
 
-    #need to add a way to remove inputs
+    def removeInput(self, input):
+        self.inputs.remove(input)
 
-    #need to add way to modify weight
+    def setInputWeightByIndex(self, index, weight):
+        self.inputs[index][1] = weight
 
     def process(self):
         value = 0
@@ -52,8 +56,8 @@ class brain:
     
     def addNode(self, layer, activation, label = None):
         if layer < len(self.layers):
-            id = f'L{layer}-I{len(self.layers[layer])}'
-            n = node(activation, label = label, id = id)
+            #id = f'L{layer}-I{len(self.layers[layer])}'
+            n = node(activation, label = label)
             self.layers[layer].append(n)
             return n
         else:
@@ -81,32 +85,101 @@ class brain:
         output = self.getNode(len(self.layers) - 1, index)
         return output.getValue()
 
-    def addNodeBetween(self):
-        pass
+    def replaceLinkWithNode(self, index, activation, label = None):
+        #add node in place of link
+        link = self.links[index]
+        inputLayer = self.getLayerOfNode(link[0])
+        outputLayer = self.getLayerOfNode(link[1])
+
+        if outputLayer - inputLayer == 1:
+            #they are right next to eachother, we need to add a layer
+            layer = outputLayer
+            self.addLayer(layer)
+        else:
+            layer = outputLayer + inputLayer // 2
+
+        #now add the node
+        newNode = self.addNode(layer, activation, label = label)
+
+        #delete link
+        weightIn = self.links[index][2]
+        input = self.links[index][0]
+        output = self.links[index][1]
+        self.removeLinkByIndex(index)
+
+        #add new links in and out of node
+        self.addLink(input, newNode, weightIn)
+        self.addLink(newNode, output, 1)
+
+        return newNode
+
+    def getLayerOfNode(self, node):
+        layer = None
+        for i in range(len(self.layers)):
+            for j in range(len(self.layers[i])):
+                if self.layers[i][j] == node:
+                    layer = i
+                    break
+        return layer
 
     def getNode(self, layer, index):
         return self.layers[layer][index]
 
     def addLink(self, input, output, weight):
-        output.addInput(input, weight)
-        self.links.append([input, output, weight])
+        #also need to check they aren't on the same layer
+        #also need to check input is before output
+        #also need to add check for cycle
 
-    def updateLink(self):
-        pass
+        #CHECK FOR DUPLICATES
+        if [input, weight] not in output.inputs:
+            index = output.addInput(input, weight)
+            self.links.append([input, output, weight, index])
+            return len(self.links) - 1
+        return None
 
-    def removeLink(self):
-        pass
+    def updateLinkByIndex(self, index, weight):
+        self.links[index][1].setInputWeightByIndex(self.links[index][3], weight)
 
-    def removeNode(self):
-        pass
+    def removeLinkByIndex(self, index):
+        link = self.links[index]
+        link[1].removeInput([link[0], link[2]])
+        del self.links[index]
+
+    def removeNode(self, node):
+        #delete links if there are any
+        for i in range(len(self.links) - 1, -1, -1):
+            l = self.links[i]
+            if l[0] == node or l[1] == node:
+                #if this node is an input in a link, delete it from the input list in the output node
+                if l[0] == node:
+                    l[1].removeInput([l[0], l[2]])
+                del self.links[i]
+    
+        #remove node from node list
+        for i in range(len(self.layers)):
+            for j in range(len(self.layers[i]) - 1, -1, -1):
+                if self.layers[i][j] == node:
+                    del self.layers[i][j]
+
+        #delete the node
+        del node
+
+    def removeNodeByIndex(self, layer, index):
+        self.removeNode(self.layers[layer][index])
 
     def addLayer(self, layer = None):
         if layer == None:
             layer = len(self.layers) - 1
         self.layers.insert(layer, [])
+        return layer
 
-    def removeLayer(self):
-        pass
+    def removeLayer(self, layer):
+        #delete nodes in layer
+        for i in range(len(self.layers[layer]) - 1, -1, -1):
+            self.removeNode(self.layers[layer][i])
+
+        #delete layer
+        del self.layers[layer]
 
     def process(self):
         for i in range(1, len(self.layers)):

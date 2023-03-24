@@ -54,12 +54,17 @@ class visualizer:
             for n in range(rows):
                 x = l * columnDistance + (columnDistance / 2)
                 y = n * rowDistance + (rowDistance / 2)
+                
+                #if l % 2 == 0:
+                #    y -= 50
 
+                #maybe change this to minimize distance/crossover
                 x1 = x + self.node_size
                 y1 = y + self.node_size
                 node = self.nueralNetwork.layers[l][n]
                 nodeImage = self.canvas.create_oval(x, y, x1, y1, fill = '#1BC2A0')
-                nodes[f'{node.id}'] = nodeImage
+                #nodes[f'{node.id}'] = nodeImage
+                nodes[node.id] = nodeImage
 
                 #write value, bias
                 text = ''
