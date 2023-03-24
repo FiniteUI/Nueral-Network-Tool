@@ -3,7 +3,7 @@ import NeuralNetwork_Visualizer
 import os
 import time
 import datetime
-import NueralNetwork_ActivationFunctions
+import NeuralNetwork_ActivationFunctions
 
 #create a simple nueral network for testing
 b = NeuralNetwork.brain()
@@ -24,31 +24,31 @@ nodes[len(nodes) - 1].append(b.addInput(label='Lower Left'))
 #now add layers and links
 nodes.append([])
 b.addLayer()
-nodes[len(nodes) - 1].append(b.addNode(1, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[0][0], nodes[len(nodes) - 1][0], 1)
 b.addLink(nodes[0][3], nodes[len(nodes) - 1][0], 1)
-nodes[len(nodes) - 1].append(b.addNode(1, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[0][1], nodes[len(nodes) - 1][1], 1)
 b.addLink(nodes[0][2], nodes[len(nodes) - 1][1], 1)
-nodes[len(nodes) - 1].append(b.addNode(1, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[0][0], nodes[len(nodes) - 1][2], 1)
 b.addLink(nodes[0][3], nodes[len(nodes) - 1][2], -1)
-nodes[len(nodes) - 1].append(b.addNode(1, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(1, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[0][1], nodes[len(nodes) - 1][3], 1)
 b.addLink(nodes[0][2], nodes[len(nodes) - 1][3], -1)
 
 nodes.append([])
 b.addLayer()
-nodes[len(nodes) - 1].append(b.addNode(2, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[1][0], nodes[len(nodes) - 1][0], 1)
 b.addLink(nodes[1][1], nodes[len(nodes) - 1][0], 1)
-nodes[len(nodes) - 1].append(b.addNode(2, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[1][0], nodes[len(nodes) - 1][1], -1)
 b.addLink(nodes[1][1], nodes[len(nodes) - 1][1], 1)
-nodes[len(nodes) - 1].append(b.addNode(2, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[1][2], nodes[len(nodes) - 1][2], 1)
 b.addLink(nodes[1][3], nodes[len(nodes) - 1][2], -1)
-nodes[len(nodes) - 1].append(b.addNode(2, activation = NueralNetwork_ActivationFunctions.hyperbolicTangent))
+nodes[len(nodes) - 1].append(b.addNode(2, activation = NeuralNetwork_ActivationFunctions.hyperbolicTangent))
 b.addLink(nodes[1][2], nodes[len(nodes) - 1][3], 1)
 b.addLink(nodes[1][3], nodes[len(nodes) - 1][3], 1)
 
@@ -56,28 +56,28 @@ b.addLink(nodes[1][3], nodes[len(nodes) - 1][3], 1)
 nodes.append([])
 
 #empty
-nodes[len(nodes) - 1].append(b.addOutput(label = "Empty", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Empty", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][0], nodes[len(nodes) - 1][0], 1)
 #full
-nodes[len(nodes) - 1].append(b.addOutput(label = "Full", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Full", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][0], nodes[len(nodes) - 1][1], -1)
 #left vertical
-nodes[len(nodes) - 1].append(b.addOutput(label = "Left Vertical", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Left Vertical", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][1], nodes[len(nodes) - 1][2], 1)
 #rightvertical
-nodes[len(nodes) - 1].append(b.addOutput(label = "Right Vertical", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Right Vertical", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][1], nodes[len(nodes) - 1][3], -1)
 ##up diagonal
-nodes[len(nodes) - 1].append(b.addOutput(label = "Up Diagonal", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Up Diagonal", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][2], nodes[len(nodes) - 1][4], 1)
 #down diagonal
-nodes[len(nodes) - 1].append(b.addOutput(label = "Down Diagonal", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Down Diagonal", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][2], nodes[len(nodes) - 1][5], -1)
 #lower horizontal
-nodes[len(nodes) - 1].append(b.addOutput(label = "Lower Horizontal", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Lower Horizontal", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][3], nodes[len(nodes) - 1][6], 1)
 #upper horizontal
-nodes[len(nodes) - 1].append(b.addOutput(label = "Upper Horizontal", activation = NueralNetwork_ActivationFunctions.rectifiedLinearUnits))
+nodes[len(nodes) - 1].append(b.addOutput(label = "Upper Horizontal", activation = NeuralNetwork_ActivationFunctions.rectifiedLinearUnits))
 b.addLink(nodes[2][3], nodes[len(nodes) - 1][7], -1)
 
 #path = os.path.realpath(os.path.dirname(__file__))
@@ -102,7 +102,7 @@ v.waitUntilClick()
 #b.removeLinkByIndex(5)
 #b.updateLinkByIndex(5, 1.3)
 #b.removeLayer(2)
-#b.replaceLinkWithNode(5, NueralNetwork_ActivationFunctions.hyperbolicTangent)
+#b.replaceLinkWithNode(5, NeuralNetwork_ActivationFunctions.hyperbolicTangent)
 #v.drawNetwork(showWeights = True)
 #v.waitUntilClick()
 

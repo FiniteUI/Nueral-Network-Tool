@@ -3,7 +3,7 @@
 import pickle
 import os
 import operator
-import NueralNetwork_ActivationFunctions
+import NeuralNetwork_ActivationFunctions
 
 class node:
     count = 0
@@ -64,7 +64,7 @@ class brain:
             return None
 
     def addInput(self, label = None):
-        n = self.addNode(0, activation=NueralNetwork_ActivationFunctions.direct, label = label)
+        n = self.addNode(0, activation=NeuralNetwork_ActivationFunctions.direct, label = label)
         return n
 
     def addOutput(self, activation, label = None):
