@@ -1,185 +1,119 @@
 #simple nueral network tool
 #https://www.youtube.com/watch?v=aircAruvnKk
 
-import math
 import pickle
 import os
 import operator
+import NueralNetwork_ActivationFunctions
 
 class node:
-    def setValue(self, value, input = False):
-        value = float(value)
-        self.unfixedValue = value
+    #node will just store inputs, and weights, and it's own value
+    def __init__(self, activation, label = None, id = None):
+        #list of nodes and weights that input to this node
+        self.inputs = []
+        self.value = 0
+        self.rawValue = 0
+        self.activation = activation
 
-        if input:
-            self.value = value
-        else:
-            self.value = self.activation(value)
-        #print(f'ID: {self.id}, New Value: {self.value}')
+        #optional
+        self.label = label
+        self.id = id
+
+    def setValue(self, value):
+        self.rawValue = value
+        self.value = self.activation(value)
 
     def getValue(self):
         return self.value
     
-    def setWeights(self, weights):
-        self.weights = weights
-    
-    def setWeight(self, index, weight):
-        self.weights[index] = weight
+    def getRawValue(self):
+        return self.rawValue
 
-    def addWeight(self, weight):
-        self.weights.append(weight)
+    def addInput(self, node, weight):
+        input = [node, weight]
+        self.inputs.append(input)
 
-    def clearWeights(self):
-        self.setWeights([])
+    #need to add a way to remove inputs
 
-    def setBias(self, bias):
-        self.bias = bias
-
-    def setInputs(self, inputs):
-        self.inputs = inputs
+    #need to add way to modify weight
 
     def process(self):
-        n = 0
-        for i in range(0, len(self.inputs)):
-            #print(f'ID: {self.id}, Input: {self.inputs[i].id}, Input Value: {self.inputs[i].getValue()}, Weight: {self.weights[i]}')
-            n += self.inputs[i].getValue() * self.weights[i]
-        #print(f'ID: {self.id}, Input Sum: {n}, Bias: {self.bias}, Sum + Bias: {n + self.bias}')
-        n += self.bias
-        self.unfixedValue = n
-        self.setValue(n)
-
-    def sigmoid(value):
-        s = 0 - value
-        s = math.pow(math.e, s)
-        s += 1
-        s = 1/s
-        return s
-
-    def hyperbolicTangent(value):
-        return math.tanh(value)
-    
-    def rectifiedLinearUnits(value):
-        if value < 0:
-            value = 0
-        return value
-    
-    def positiveNegative(value):
-        if value <= 0:
-            value = 0
-        else:
-            value = 1
-        return value
-    
-    def __init__(self, bias, weights = [], inputs = [], id = None, label = None, activation = positiveNegative):
-        self.id = id
-        self.bias = bias
-
-        #weights are always coming from previous layer
-        self.weights = weights
-        self.inputs = inputs
-
-        #value should always be between 0 and 1
-        self.value = 0
-        self.unfixedValue = 0
-
-        self.label = label
-        self.activation = activation
+        value = 0
+        for i in self.inputs:
+            #value = input value * weight
+            value += i[0].getValue() * i[1]
+        self.setValue(value)
 
 class brain:
     def __init__(self):
-        self.inputs = []
-        self.outputs = []
-        self.layers = [self.inputs, self.outputs]
-        self.nodes = []
-
-    def addNode(self, layer, bias = 0, weightsIn = None, weightsOut = None, inputs = [], label = None, activation = node.positiveNegative):
-        #0 is always input
-        #len(self.layers) - 1 is always output
-        #layer must already exist
-        id = f'L{layer}-I{len(self.layers[layer])}'
-
-        if weightsIn == None:
-            if layer > 0:
-                weightsIn = self.getWeightsList(layer - 1)
-        
-        if inputs == []:
-            if layer > 0:
-                inputs = self.layers[layer - 1]
-
-        n = node(bias, weightsIn, inputs, id = id, label = label, activation = activation)
-        self.nodes.append(n)
-        self.layers[layer].append(n)
-
-        if weightsOut == None:
-            if layer < len(self.layers) - 1:
-                weightsOut = self.getWeightsList(layer + 1)
-
-        #now need to add weights for that node to next layer
-        if layer < len(self.layers) - 1:
-            for i in range(len(self.layers[layer + 1])):
-                self.layers[layer + 1][i].addWeight(weightsOut[i])
-                self.layers[layer + 1][i].setInputs(inputs)
-
-        return n
+        #list of layers, nodes in layers
+        self.layers = [[], []]
+        self.links = []
     
-    def addInput(self, bias = 0, weightsOut = None, label = None):
-        n = self.addNode(0, bias, weightsOut = weightsOut, label = label)
+    def addNode(self, layer, activation, label = None):
+        if layer < len(self.layers):
+            id = f'L{layer}-I{len(self.layers[layer])}'
+            n = node(activation, label = label, id = id)
+            self.layers[layer].append(n)
+            return n
+        else:
+            return None
+
+    def addInput(self, label = None):
+        n = self.addNode(0, activation=NueralNetwork_ActivationFunctions.direct, label = label)
         return n
 
-    def addOutput(self, bias = 0, weightsIn = None, inputs = None, label = None, activation = node.positiveNegative):
-        if inputs == None:
-            inputs = self.layers[len(self.layers) - 2]
-        n = self.addNode(len(self.layers) - 1, bias, weightsIn = weightsIn, inputs = inputs, label = label, activation = activation)
+    def addOutput(self, activation, label = None):
+        n = self.addNode(len(self.layers) - 1, activation=activation, label = label)
         return n
-    
-    def addLayer(self, index = None, bias = 0, weightsIn = None, weightsOut = None):
-        if index == None:
-            index = len(self.layers) - 1
 
-        #clear out weights in from next layer
-        for i in self.layers[index]:
-            i.clearWeights()
-
-        #first add the layer to our layer list
-        self.layers.insert(index, [])
-        
-        return self.layers[index]
-    
-    def setInput(input, value):
-        input.setValue(value, True)
+    def setInput(self, input, value):
+        input.setValue(value)
 
     def setInputByIndex(self, index, value):
-        brain.setInput(self.inputs[index], value)
+        input = self.getNode(0, index)
+        input.setValue(value)
 
     def getOutput(self, output):
         return output.getValue()
     
     def getOutputByIndex(self, index):
-        return self.getOutput(self.outputs[index])
+        output = self.getNode(len(self.layers) - 1, index)
+        return output.getValue()
+
+    def addNodeBetween(self):
+        pass
+
+    def getNode(self, layer, index):
+        return self.layers[layer][index]
+
+    def addLink(self, input, output, weight):
+        output.addInput(input, weight)
+        self.links.append([input, output, weight])
+
+    def updateLink(self):
+        pass
+
+    def removeLink(self):
+        pass
+
+    def removeNode(self):
+        pass
+
+    def addLayer(self, layer = None):
+        if layer == None:
+            layer = len(self.layers) - 1
+        self.layers.insert(layer, [])
+
+    def removeLayer(self):
+        pass
 
     def process(self):
-        for l in range(1, len(self.layers)):
-            for n in self.layers[l]:
-                n.process()
+        for i in range(1, len(self.layers)):
+            for j in self.layers[i]:
+                j.process()
+                #print(f'ID: {j.id}, Value: {j.getValue()}')
+        
+        return self.layers[len(self.layers) - 1]
 
-    def getWeightsList(self, layer):
-        weights = [1 for i in self.layers[layer]]
-        return weights
-    
-    def saveStructure(self, path, name):
-        if not os.path.exists(path):
-            os.makedirs(path)
 
-        file = os.path.join(path, name) + '.ns'
-        with open(file, 'wb') as f:
-            pickle.dump(self, f)
-
-    def loadStructure(file):
-        with open(file, 'rb') as f:
-            b = pickle.load(f)
-        return b
-    
-    def getSortedOutputs(self):
-        outputs = [[x, self.outputs[x].label, self.outputs[x].value] for x in range(len(self.outputs))]
-        outputs = sorted(outputs, key = operator.itemgetter(2), reverse = True)
-        return outputs
