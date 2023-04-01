@@ -102,9 +102,14 @@ v.waitUntilClick()
 #b.removeLinkByIndex(5)
 #b.updateLinkByIndex(5, 1.3)
 #b.removeLayer(2)
-#b.replaceLinkWithNode(5, NeuralNetwork_ActivationFunctions.hyperbolicTangent)
+#b.replaceLinkWithNode(0, NeuralNetwork_ActivationFunctions.hyperbolicTangent)
 #v.drawNetwork(showWeights = True)
 #v.waitUntilClick()
+
+#links = b.getLinkCount()
+#print(links)
+#links = b.getMaxLinkCount()
+#print(links)
 
 #now process
 b.process()

@@ -1,4 +1,5 @@
 import tkinter
+import time
 
 class visualizer:
     def __init__(self, n, length, width, border=20, node_size = 50, line_scale = 2):
@@ -64,7 +65,9 @@ class visualizer:
                 node = self.nueralNetwork.layers[l][n]
                 nodeImage = self.canvas.create_oval(x, y, x1, y1, fill = '#1BC2A0')
                 #nodes[f'{node.id}'] = nodeImage
-                nodes[node.id] = nodeImage
+
+                #nodes[node.id] = nodeImage
+                nodes[node] = nodeImage
 
                 #write value, bias
                 text = ''
@@ -98,7 +101,8 @@ class visualizer:
                             fill = 'gray'
 
                         previousNode = self.nueralNetwork.layers[l][n].inputs[i][0]
-                        origin = self.canvas.coords(nodes[previousNode.id])
+                        #origin = self.canvas.coords(nodes[previousNode.id])
+                        origin = self.canvas.coords(nodes[previousNode])
 
                         #calculate center
                         centerX = (origin[0] + origin[2]) / 2
@@ -107,6 +111,8 @@ class visualizer:
                         #calculate center of destination
                         destCenterX = (x + x1) / 2
                         destCenterY = (y + y1) / 2
+
+                        #print(f'Drawing link from node {previousNode}, {previousNode.label}, X={centerX}Y={centerY}to node {self.nueralNetwork.layers[l][n]}, {self.nueralNetwork.layers[l][n].label}, X1={destCenterX}Y1={destCenterY} with weight {weight} ...')
 
                         #now create line
                         line = self.canvas.create_line(centerX, centerY, destCenterX, destCenterY, width = width, fill = fill)
@@ -127,5 +133,9 @@ class visualizer:
     def waitUntilClick(self):
         self.canvas.bind('<Button-1>', self._click)
         self.window.mainloop()
+
+    def waitForSeconds(self, seconds):
+        time.sleep(seconds)
+        self.close()
 
         
