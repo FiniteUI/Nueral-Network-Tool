@@ -20,6 +20,9 @@ class node:
         self.id = node.count
         node.count += 1
 
+    def setActivationFunction(self, function):
+        self.activation = function
+
     def setValue(self, value):
         self.rawValue = value
         self.value = self.activation(value)
@@ -68,10 +71,12 @@ class brain:
         self.id = brain.id
         brain.id += 1
         self.label = label
+
+    def setNodeActivationFunction(self, node, function):
+        node.setActivationFunction(function)
     
     def addNode(self, layer, activation, label = None):
         if layer < len(self.layers):
-            #id = f'L{layer}-I{len(self.layers[layer])}'
             n = node(activation, label = label)
             self.layers[layer].append(n)
             return n
